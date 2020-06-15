@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
+import ErrorComponent from './Error.component';
 
-const FormComponent = () => {
+const FormComponent = props => {
 
-    const [infoCity, setInfoCityState] = useState(
+    const [searchCity, setSearchCityState] = useState(
         {
            //id:'',
            city:'',
@@ -10,14 +11,53 @@ const FormComponent = () => {
         }
       );
 
+    const [error, setErrorState] = useState(false);
+
+    const onChangeForm = event => {
+        setSearchCityState({
+            ...searchCity,
+            // adding an ID - uuid library
+            //id: uuid(),
+            // adding the form info to the state
+            [event.target.name]: event.target.value
+        });
+    } 
+
+
+
+    const onSubmit = event => {
+        event.preventDefault();
+
+        // validation
+        if (searchCity.city.trim() ==='' || 
+        searchCity.country.trim() ==='' ){
+            setErrorState(true);
+            return;
+        } 
+        setErrorState(false);
+
+        props.setFormSearchedState(searchCity);
+/*
+        setSearchCityState({ 
+            city:'',
+            country:''
+        });
+*/
+    }
+
     return (
-        <form>
+        <form onSubmit={onSubmit}>
+        {/** if - error message with .css*/}
+        {error ?
+            <ErrorComponent message="All filds are required"/>
+            : null
+        }
             <div className="input-field col s12">
                 <input type="text"
                  name="city"
                  id="city"
-                // onChange={onChangeForm}
-                //value={infoCity.city}
+                onChange={onChangeForm}
+                value={searchCity.city}
                 />
                 <label htmlFor="city">City: </label>
             </div>
@@ -26,6 +66,8 @@ const FormComponent = () => {
                 <select type="text"
                  name="country"
                  id="country"
+                 onChange={onChangeForm}
+                 value={searchCity.country}
                 >
                   <option value="">- Select -</option>
                   <option value="CO">Colombia</option>
@@ -37,6 +79,15 @@ const FormComponent = () => {
 
                 <label htmlFor="country">Country: </label>
             </div>
+
+            {/** Button */}
+        <div className="input-field col s12">
+            <input 
+            type="submit"
+            value="Check the Weather"
+            className="waves-effect waves-light btn-large btn-block yellow accent-4"
+            /> 
+        </div>
 
         </form>
     )
